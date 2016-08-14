@@ -2,7 +2,7 @@
 	<head>
 		<title> @yield('title') </title>
 
-        <script> @yield('script') </script>
+        @yield('header')
 
 	</head>
 	<body>

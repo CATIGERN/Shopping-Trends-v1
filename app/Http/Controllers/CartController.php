@@ -7,6 +7,8 @@ use App;
 use App\Cart;
 use App\Item;
 use App\CartItem;
+use App\Store;
+use ReflectionClass;
 use Log;
 use Redirect;
 use Exception;
@@ -15,19 +17,32 @@ use App\Http\Requests;
 
 class CartController extends Controller
 {
+    public function welcome(){
+        $carts = CartController::showCarts();
+        session(['userid' => 1]);
+        return view('welcome', compact('carts'));
+    }
+
     public function showCarts(){
     	$carts = Cart::all();
     	return $carts;
     }
 
     public function showCartItems($cartid){
-    	$items = CartItem::select('cartname', 'itemname')
+    	$items = CartItem::select('cartitems.iditem', 'itemname', 'itembought')
     				->join('carts', 'carts.idcart', '=', 'cartitems.idcart')
     				->join('items', 'items.iditem', '=', 'cartitems.iditem')
     				->where('cartitems.idcart', $cartid)
-    				->orderBy('itemaddedat')
+    				->orderBy('itembought')
+                    ->orderBy('itemaddedat')
     				->get();
     	return $items;
+    }
+
+    public function cartName($cartid){
+        $cartname = Cart::where('idcart', $cartid)
+                        ->pluck('cartname')->first();
+        return $cartname;
     }
 
     public function show($cartid){
@@ -36,16 +51,12 @@ class CartController extends Controller
                 throw new Exception;
             }
         	$items = CartController::showCartItems($cartid);
+            $cartname = CartController::cartName($cartid);
         }
         catch(Exception $e){
             App::abort('404', 'Cart not found');
         }
-        return view('cart', compact('items', 'cartid'));
-    }
-
-    public function welcome(){
-        $carts = CartController::showCarts();
-        return view('welcome', compact('carts'));
+        return view('cart', compact('items', 'cartid', 'cartname'));
     }
 
     public function checkItem($itemname){
@@ -107,5 +118,63 @@ class CartController extends Controller
             DB::rollback();
         }
         return redirect()->back()->with('message', $message);
+    }
+
+    public function checkCartName($cartname){
+        $count = Cart::where('cartname', $cartname)->count();
+        return $count;
+    }
+
+    public function addCart(Request $request){
+        $count = CartController::checkCartName($request->cartname);
+        if($count == 1){
+            return redirect()->back()->with('cartExists', 'Cart already exists');
+        }
+        $cart = new Cart;
+        $cart->cartname = $request->cartname;
+        $cart->userid = $request->session()->get('userid');
+        $cart->save();
+        return back();
+    }
+
+    public function checkStore($storename){
+        $storeid = Store::select('idstore')->where('storename', $storename)
+                        ->get();
+        if($storeid->isEmpty()){
+            return -1;
+        }
+        return $storeid->pluck('idstore')->first();
+    }
+
+    public function addStore($storename){
+        $store = new Store;
+        $store->storename = $storename;
+        $store->save();
+        return $store->idstore;
+    }
+
+
+    public function markItem(Request $request, $cartid, $itemid){
+        DB::beginTransaction();
+        try{
+            if(!CartController::checkItemInCart($cartid, $itemid)){
+                throw new Exception;
+            }
+            $storeid = CartController::checkStore($request->storename);
+            if($storeid == -1){
+                $storeid = CartController::addStore($request->storename);
+            }
+            $cartitem = CartItem::where('idcart', $cartid)
+                                    ->where('iditem', $itemid)
+                                    ->update(['idstore' => $storeid,
+                                        'price' => $request->price,
+                                        'quantity' => $request->quantity,
+                                        'itembought' => true]);
+            DB::commit();
+        }
+        catch(Exception $e){
+            DB::rollback();
+        }
+        return back();
     }
 }

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<title>Alert.js - Beautifully crafted responsive javascript alert boxes.</title>
+	<link rel="stylesheet" href="css/reset.css" />
+	<link rel="stylesheet" href="../theme/alert.core.css" />
+	<link rel="stylesheet" href="../theme/alert.lite.css" id="alertJStheme" />
+	<link rel="stylesheet" href="css/main.css?v=0.0.0" />
+	<script src="../lib/alert.js"></script>
+	<script>
+		function changeStylesheet() {
+			setTimeout(function(){
+				//wait for named hash to load
+				if( location.hash === '#default' ) {
+					document.getElementById('alertJStheme').href = '../theme/alert.default.css';
+					document.getElementById('lite').className = 'linkBtn';
+					document.getElementById('default').className = 'linkBtn active';
+				} else {
+					document.getElementById('alertJStheme').href = '../theme/alert.lite.css';
+					document.getElementById('default').className = 'linkBtn';
+					document.getElementById('lite').className = 'linkBtn active';
+				}
+			}, 10);
+		}
+
+		changeStylesheet();
+	</script>
+</head>
+<body>
+	<div id="fb-root"></div>
+	<script>
+		(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)) return;
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+
+		window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));	
+	</script>
+
+	<div class="container">
+		<div class="theme">
+			<a href="#lite" class="linkBtn" onclick="changeStylesheet()" id="lite">Lite theme</a>
+			<a href="#default" class="linkBtn" onclick="changeStylesheet()" id="default">Default theme</a>
+		</div>
+		<a href="javascript:void(0)" onclick="fromTop()" class="link">Alert</a>
+		<a href="javascript:void(0)" onclick="fromLeft()" class="link">Confirm</a>
+		<a href="javascript:void(0)" onclick="fromRight()" class="link">Prompt</a>
+		<a href="javascript:void(0)" onclick="fromBottom()" class="link">Bottom</a>
+		<a href="javascript:void(0)" onclick="register()" class="link">Register</a>
+		<a href="javascript:void(0)" onclick="noHeader()" class="link">No Header</a>
+		<div class="countdown">
+			<p>
+				New popup in
+			</p>
+			<span id="counter">10</span>
+			<p class="sec">Sec</p>
+		</div>
+		<div id="info" style="display: none">
+			<div style="width: 90%; margin: 0 auto">
+				<p>
+				 This project is in its initial phase. We are continuously working on improvements 
+				 to make this project better. Some of the cool features are still in development.
+				 <br/><br/>
+				 So feel free to try and report any bug found. Pull requests, issues, and plugin 
+				 recommendations are more than welcome!
+				</p>
+				<br/>
+				<div class="fb-share-button" data-href="https://ankitpokhrel.com.np/alert.js" data-layout="button_count" class="social"></div>
+				<div class="social" style="position: relative; top: 3px; left: 5px;"><a class="twitter-share-button" href="https://twitter.com/share" data-via="twitterdev" data-url: "https://ankitpokhrel.com.np/alert.js">Tweet</a></div>
+			</div>
+		</div>
+		<div id="register" style="display: none">
+			<div style="width: 90%; margin: 0 auto">
+				<p>
+				 You can also use custom form in alert box. Data from evey input fields will be available in name value pairs. If the name attribute is not provided, numeric index is used. 
+				 <br/><br/>				
+				 <label>First Name</label> <input type="text" name="firstName" class="inp" /><br/>
+				 <label>Last Name</label> <input type="text" name="lastName" class="inp" /><br/>
+				 <label>Website</label> <input type="url" name="website" class="inp" /><br/>
+				 <label>Country</label>
+				 <select name="country" class="inp">
+				 	<option>Nepal</option>
+				 </select>
+				</p>				
+			</div>
+		</div>
+	</div>
+	
+	<script>
+		function fromTop() {			
+			alertjs.show({
+				title: 'Error!',
+				text: 'You must fill all fields to continue',
+				from: 'top',
+				effect: 'ease-in-bounce',
+				success: function() {
+					//user clicked ok button
+				},
+				cancelled: function() {
+					//user clicked cancel button
+				},
+				complete: function( val ) {
+					//this callback is available everytime
+					//val will help you decide if user clicked
+					//OK or Cancel
+				}
+			});
+		}
+
+		function fromLeft() {	
+			var opt = {
+				type: 'confirm',
+				title: 'Confirm',
+				text: 'Are you sure you want to perform this action?',
+				buttons: {
+					OK: {
+						label: 'Yes',
+						attrs: {
+							'class': 'btn btn-ok',
+							id: 'ok_btn'
+						}
+					},
+					CANCEL: {
+						label: 'No',
+						attrs: {
+							'class': 'btn btn-cancel'
+						}
+					}
+				},
+				wait: 100,
+				effect: 'ease-in-bounce',
+				from: 'left',				
+				success: function() {
+					console.log('You clicked success');
+				},
+				cancelled: function() {
+					console.log('You clicked cancel');
+				},
+				complete: function(val) {
+					if( val ) {
+						console.log('You clicked success');
+					} else {
+						console.log('You clicked cancel');
+					}
+					
+				}
+			};
+
+			alertjs.show(opt);
+		}
+
+		function fromRight() {			
+			alertjs.show({
+				type: 'prompt',
+				title: 'Alert.js',
+				text: 'Enter your name to continue:',
+				overlay: false,
+				buttons: {
+					OK: {
+						label: 'Continue',
+						attrs: {
+							'class': 'btn btn-ok',
+							id: 'ok_btn'
+						}
+					},
+					CANCEL: {
+						label: 'Go Back',
+						attrs: {
+							'class': 'btn btn-cancel'
+						}
+					}
+				},
+				success: function(val) {
+					var value = 'Your name is ' + val;
+					if( val === '' ) {
+						value = 'You didn\'t type anything!';
+					}
+					alertjs.show({
+						title: 'Alert.js',
+						from: 'top',
+						effect: 'ease-in-bounce',
+						text: value
+					});
+				},
+				cancelled: function() {
+
+				},
+				complete: function(status, val) {
+					console.log(status);
+					if( status ) {
+						console.log(val);
+					} else {
+						console.log('empty');
+					}
+				},
+				wait: 0,
+				effect: 'ease-in-bounce',
+				from: 'right'
+			});
+		}
+
+		function fromBottom() {			
+			alertjs.show({
+				type: 'alert',
+				title: 'Alert.js',
+				text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Id debitis corrupti laudantium quod officia rem? Soluta qui ad vitae czm. Commodi magnam animi perferendis sit rem expedita, nam minima dolorem!',				
+				from: 'bottom',
+				effect: 'ease-in-bounce',
+				success: function() {
+					console.log('some test');
+				}
+			});
+		}	
+
+		function register() {
+			alertjs.show({
+				title: 'Register to our site!',
+				text: '#register',
+				buttons: {
+					OK: {
+						label: 'Next',
+					}
+				},
+				effect: 'shake',
+				overlay: false,
+				success: function(val) {
+					var str = '';
+					for( var prop in val ) {
+						str += "<label>" + prop + ":</label> " + val[prop] + "<br/>";
+					}
+					console.log(str);
+					alertjs.show({
+						title: 'You entered following values:',
+						text: str
+					});
+				},
+				complete: function( status, val ) {
+					console.log(status, val);
+				}
+			});
+		}
+
+		function noHeader() {			
+			alertjs.show({
+				text: 'Oops! Something went wrong! Please try again.',
+				from: 'top',
+				effect: 'ease-in-bounce',
+				header: false,
+				success: function() {
+					//user clicked ok button
+				},
+				cancelled: function() {
+					//user clicked cancel button
+				},
+				complete: function( val ) {
+					//this callback is available everytime
+					//val will help you decide if user clicked
+					//OK or Cancel
+				}
+			});
+		}	
+		
+		window.onload = function() {
+			var i = 10;
+			var countdown = function() {
+				--i;
+				if( i >= 0 ) {
+					document.getElementById('counter').innerHTML = i;
+				} else {
+					clearInterval(interval);
+					var countdown = document.querySelector('.countdown');
+					countdown.parentNode.removeChild(countdown);
+				}
+			}
+
+			var interval = setInterval(countdown, 1000);
+
+			setTimeout(function() {
+				alertjs.show({
+						title: 'Welcome to alert.js!',
+						text: '#info',
+						buttons: {
+							OK: {
+								label: 'Continue',
+							}
+						},
+						effect: 'shake',
+						overlay: false,
+						success: function(val) {
+							console.log(val);
+						},
+						complete: function( status, val ) {
+							console.log(status, val);
+						}
+					});
+				}, 	10000);
+		}
+	</script>
+</body>
+</html>

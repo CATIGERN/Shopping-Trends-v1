@@ -28,4 +28,6 @@ Route::get('/carts/{cartid}', 'CartController@show');
 
 Route::post('/carts/{cartid}/add', 'CartController@addItemToCart');
 
-Route::get('/items/{cartid}/{itemid}', 'CartController@checkItemInCart');
+Route::post('/carts/add', 'CartController@addCart');
+
+Route::post('/carts/{cartid}/mark/{itemid}', 'CartController@markItem');
