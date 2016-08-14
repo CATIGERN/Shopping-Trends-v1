@@ -11,6 +11,21 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', 'CartController@welcome');
+
+
+Route::get('/test', function(){
+	return view('test');
 });
+
+Route::get('/carts', 'CartController@showCarts');
+
+Route::get('/users', 'SimpleController@showUser');
+
+Route::get('/carts/view/{cartid}', 'CartController@showCartItems');
+
+Route::get('/carts/{cartid}', 'CartController@show');
+
+Route::post('/carts/{cartid}/add', 'CartController@addItemToCart');
+
+Route::get('/items/{cartid}/{itemid}', 'CartController@checkItemInCart');

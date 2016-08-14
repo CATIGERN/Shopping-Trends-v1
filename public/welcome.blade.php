@@ -9,11 +9,10 @@ Shopping trends
         <a href="#">Create new List</a>
         <br>
         <div>
-            <div>
-                @foreach ($carts as $cart)
-                <li><a href="/carts/{{ $cart->idcart }}"> {{ $cart->cartname }} </a></li>
-                @endforeach
+            <div ng-controller = "CartController">
+                <li ng-repeat = "cart in carts"> <a href="#"> @{{ cart.cartname }} </a></li>
             </div>
+            
         </div>
 
 @stop
