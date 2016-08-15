@@ -4,6 +4,8 @@
 <script src="/js/alert.js-0.0.0/dist/alert.min.js"></script>
 <link rel="stylesheet" href="/js/alert.js-0.0.0/dist/alert.core.min.css" />
 <link rel="stylesheet" href="/js/alert.js-0.0.0/dist/alert.default.min.css" />
+<link rel="stylesheet" href="/css/tablestyle.css">
+<link rel="stylesheet" href="/css/style.css">
 
 <script>
 function addCart(){
@@ -13,6 +15,11 @@ function addCart(){
 	from: 'top',
 });
 }
+
+function deleteCart(url){
+    document.getElementById('deletecart').action = url;
+    document.getElementById('deletecart').submit();
+}
 </script>
 @stop
 
@@ -21,16 +28,35 @@ Shopping trends
 @stop
 
 @section('content')
-        <h1 align="center">Shopping Trends</h1>
+        <h1 align="center" style="color:#595959; font-weight:bold">SHOPPING TRENDS</h1>
         <h2 align="center"> <a href="/view/trends">Generate trends</a></h2>
-        <a href="javascript:addCart()">Create new List</a>
         <br>
-        <div>
+        <div align="center">
             <div>
+            <table align = "center">
+            <tr>
+            <th>Shopping Lists</th>
+            <th>Items Bought</th><th></th>
+            </tr>
                 @foreach ($carts as $cart)
-                <li><a href="/carts/{{ $cart->idcart }}"> {{ $cart->cartname }} </a></li>
+                <tr>
+                <td>
+                <a href="/carts/{{ $cart->idcart }}"> {{ $cart->cartname }} </a></td>
+                <td></td>
+                <td><a href="javascript:deleteCart('/carts/{{ $cart->idcart }}/delete')">
+                    <img src="/delete.png" height="20" width="20"></a></td>
+                </tr>
                 @endforeach
+            </table>
             </div>
+            <br>
+            <div>
+            <h2 style="color:#595959; font-weight:bold">Create new List
+            </h2></div>
+            <div>
+            <button type="button" onclick="addCart()">+</button>
+            </div>
+            
         </div>
         @if (session()->has('cartExists'))
         {{ session('cartExists') }}
@@ -44,5 +70,10 @@ Shopping trends
 				</form>
 			</div>
 		</div>
+
+        <form method="POST" id="deletecart">
+            {{ method_field('DELETE') }}
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        </form>
 
 @stop

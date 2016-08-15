@@ -31,5 +31,9 @@ Route::post('/carts/{cartid}/edit/{itemid}', 'CartController@markItem');
 
 Route::get('/carts/{cartid}/get/{itemid}', 'CartController@getItem');
 
+Route::delete('/carts/{cartid}/delete/{itemid}', 'CartController@deleteItem');
+
 Route::get('/view/trends', 'CartController@trends');
+
+Route::delete('/carts/{cartid}/delete', 'CartController@deleteCart');
 

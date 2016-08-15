@@ -17,20 +17,48 @@ use App\Http\Requests;
 class CartController extends Controller
 {
     public function welcome(){
-        $carts = CartController::showCarts();
         session(['userid' => 1]);
+        $carts = CartController::showCarts();
         return view('welcome', compact('carts'));
     }
 
     public function showCarts(){
-    	$carts = Cart::all();
+    	$carts = Cart::where('userid', session()->get('userid'))
+                        ->get();
     	return $carts;
     }
 
+    public function itemsBought(){
+        $items = CartItem::select('idcart', 'cartname', DB::raw('count(itembought) as total'))
+                            ->join('carts', 'carts.idcart', '=', 'cartitems.idcart')
+                            ->where('carts.userid', session()->get('userid'))
+                            ->groupBy('idcart')
+                            ->get();
+        return $items;
+        /*
+        select A.idcart, A.cartname, bought, total from
+        (select shoppingtrends.cartitems.idcart, cartname, count(itembought) as total
+        from shoppingtrends.cartitems
+        inner join shoppingtrends.carts
+        on shoppingtrends.cartitems.idcart = shoppingtrends.carts.idcart
+        where shoppingtrends.carts.userid = 1
+        group by shoppingtrends.cartitems.idcart) as A
+        inner join
+        (select shoppingtrends.cartitems.idcart, cartname, count(itembought) as bought from shoppingtrends.cartitems
+        inner join shoppingtrends.carts
+        on shoppingtrends.cartitems.idcart = shoppingtrends.carts.idcart
+        where shoppingtrends.carts.userid = 1 and itembought = 1
+        group by shoppingtrends.cartitems.idcart) as B
+        on A.idcart = B.idcart
+
+        */
+    }
+
     public function showCartItems($cartid){
-    	$items = CartItem::select('cartitems.iditem', 'itemname', 'itembought')
+    	$items = CartItem::select('cartitems.iditem', 'itemname', 'itembought', 'storename', 'price')
     				->join('carts', 'carts.idcart', '=', 'cartitems.idcart')
     				->join('items', 'items.iditem', '=', 'cartitems.iditem')
+                    ->leftJoin('stores', 'cartitems.idstore', '=', 'stores.idstore')
     				->where('cartitems.idcart', $cartid)
     				->orderBy('itembought')
                     ->orderBy('itemaddedat')
@@ -192,6 +220,33 @@ class CartController extends Controller
 
     }
 
+    public function deleteItem($cartid, $itemid){
+        DB::beginTransaction();
+        try{
+            $deletes = CartItem::where('idcart', $cartid)
+                                ->where('iditem', $itemid)
+                                ->delete();
+            DB::commit();
+        }
+        catch(Exception $e){
+            DB::rollback();
+        }
+        return back();
+    }
+
+    public function deleteCart($cartid){
+        DB::beginTransaction();
+        try{
+            $deletes = Cart::where('idcart', $cartid)
+                            ->delete();
+            DB::commit();
+        }
+        catch(Exception $e){
+            DB::rollback();
+        }
+        return back();
+    }
+
     public function trends(){
         $trends = \Lava::DataTable();
 
@@ -222,6 +277,6 @@ class CartController extends Controller
         ]);
 
         return view('trends');
-
     }
+
 }
