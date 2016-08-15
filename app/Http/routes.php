@@ -13,11 +13,6 @@
 
 Route::get('/', 'CartController@welcome');
 
-
-Route::get('/test', function(){
-	return view('test');
-});
-
 Route::get('/carts', 'CartController@showCarts');
 
 Route::get('/users', 'SimpleController@showUser');
@@ -31,3 +26,10 @@ Route::post('/carts/{cartid}/add', 'CartController@addItemToCart');
 Route::post('/carts/add', 'CartController@addCart');
 
 Route::post('/carts/{cartid}/mark/{itemid}', 'CartController@markItem');
+
+Route::post('/carts/{cartid}/edit/{itemid}', 'CartController@markItem');
+
+Route::get('/carts/{cartid}/get/{itemid}', 'CartController@getItem');
+
+Route::get('/view/trends', 'CartController@trends');
+

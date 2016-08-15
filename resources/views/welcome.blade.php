@@ -22,6 +22,7 @@ Shopping trends
 
 @section('content')
         <h1 align="center">Shopping Trends</h1>
+        <h2 align="center"> <a href="/view/trends">Generate trends</a></h2>
         <a href="javascript:addCart()">Create new List</a>
         <br>
         <div>

@@ -8,8 +8,7 @@ use App\Cart;
 use App\Item;
 use App\CartItem;
 use App\Store;
-use ReflectionClass;
-use Log;
+use Khill\LavaCharts\LavaCharts;
 use Redirect;
 use Exception;
 use DB;
@@ -149,6 +148,7 @@ class CartController extends Controller
     public function addStore($storename){
         $store = new Store;
         $store->storename = $storename;
+        $store->iduser = session()->get('userid');
         $store->save();
         return $store->idstore;
     }
@@ -173,8 +173,55 @@ class CartController extends Controller
             DB::commit();
         }
         catch(Exception $e){
+            echo $e;
             DB::rollback();
         }
         return back();
+    }
+
+    public function getItem($cartid, $itemid){
+        if(!CartController::checkItemInCart($cartid, $itemid)){
+            return null;
+        }
+        $cartitem = CartItem::select('storename', 'price', 'quantity')
+                    ->join('stores', 'stores.idstore', '=', 'cartitems.idstore')
+                    ->where('cartitems.idcart', $cartid)
+                    ->where('cartitems.iditem', $itemid)
+                    ->get();
+        return $cartitem;
+
+    }
+
+    public function trends(){
+        $trends = \Lava::DataTable();
+
+        $trends->addStringColumn('Store')
+                ->addNumberColumn('Money Spent');
+
+        $result = CartItem::select('storename', DB::raw('sum(price) as total'))
+                            ->join('stores', 'stores.idstore', '=', 'cartitems.idstore')
+                            ->where('itembought', 1)
+                            ->whereIn('idcart', function($query){
+                                $query->select('idcart')
+                                        ->from('carts')
+                                        ->where('userid', session()->get('userid'))
+                                        ->get();
+                            })
+                            ->groupBy('storename')
+                            ->get();
+        foreach($result as $data){
+            $trends->addRow([$data->storename, $data->total]);
+        }
+
+        \Lava::ColumnChart('Trends', $trends, [
+            'title' => 'Shopping Trends',
+            'titleTextStyle' => [
+                'color'    => '#eb6b2c',
+                'fontSize' => 14
+            ]
+        ]);
+
+        return view('trends');
+
     }
 }
