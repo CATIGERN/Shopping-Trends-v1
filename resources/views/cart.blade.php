@@ -36,8 +36,23 @@ function deleteItem(url){
 
 function change(){
 	var selects = document.getElementById('predictions').options;
-	var val = selects[0].value;
-	document.getElementById('autocomplete').value = val;
+	if(selects.length){
+		var val = selects[0].value;
+		var original = document.getElementById('maininput').value;
+		if(!original){
+			document.getElementById('autocomplete').value = '';
+			return;
+		}
+		if(val.indexOf(original) == 0){
+			document.getElementById('autocomplete').value = val;
+		}
+		else{
+			document.getElementById('autocomplete').value = '';
+		}
+	}
+	else{
+		document.getElementById('autocomplete').value = '';
+	}
 }
 
 
