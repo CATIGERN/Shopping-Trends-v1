@@ -13,7 +13,7 @@
 
 Route::get('/', 'CartController@welcome');
 
-Route::get('/carts', 'CartController@showCarts');
+//Route::get('/carts', 'CartController@showCarts');
 
 Route::get('/users', 'SimpleController@showUser');
 
@@ -36,4 +36,6 @@ Route::delete('/carts/{cartid}/delete/{itemid}', 'CartController@deleteItem');
 Route::get('/view/trends', 'CartController@trends');
 
 Route::delete('/carts/{cartid}/delete', 'CartController@deleteCart');
+
+Route::get('/items', 'CartController@items');
 

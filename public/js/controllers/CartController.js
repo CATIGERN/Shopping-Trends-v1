@@ -1,19 +1,12 @@
 app.controller("CartController", function($scope, $http){
-	$http.get("/carts")
+    $scope.items = [''];
+	$http.get("/items")
 	.then(function(response) {
         //First function handles success
-        $scope.carts = response.data;
+        $scope.items = response.data;
     }, function(response) {
         //Second function handles error
-        $scope.carts = [response.statusText, ''];
+        $scope.items = [response.statusText, ''];
     });
-
-    $http.get("/users")
-	.then(function(response) {
-        $scope.users = response.data;
-    }, function(response) {
-        $scope.users = [response.statusText, ''];
-    });
-
         
 });

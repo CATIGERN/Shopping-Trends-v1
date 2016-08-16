@@ -18,7 +18,7 @@ class CartController extends Controller
 {
     public function welcome(){
         session(['userid' => 1]);
-        $carts = CartController::showCarts();
+        $carts = CartController::itemsBought();
         return view('welcome', compact('carts'));
     }
 
@@ -29,11 +29,14 @@ class CartController extends Controller
     }
 
     public function itemsBought(){
-        $items = CartItem::select('idcart', 'cartname', DB::raw('count(itembought) as total'))
-                            ->join('carts', 'carts.idcart', '=', 'cartitems.idcart')
-                            ->where('carts.userid', session()->get('userid'))
-                            ->groupBy('idcart')
-                            ->get();
+        $items = DB::table('carts')
+                    ->select('carts.idcart', 'carts.cartname',
+                        DB::raw('sum(case when cartitems.itembought = 1 then 1 else 0 end) as bought'),
+                        DB::raw('count(cartitems.itembought) as total'))
+                    ->leftJoin('cartitems', 'carts.idcart', '=' ,'cartitems.idcart')
+                    ->where('carts.userid', session()->get('userid'))
+                    ->groupBy('carts.idcart')
+                    ->get();
         return $items;
         /*
         select A.idcart, A.cartname, bought, total from
@@ -50,7 +53,6 @@ class CartController extends Controller
         where shoppingtrends.carts.userid = 1 and itembought = 1
         group by shoppingtrends.cartitems.idcart) as B
         on A.idcart = B.idcart
-
         */
     }
 
@@ -217,8 +219,13 @@ class CartController extends Controller
                     ->where('cartitems.iditem', $itemid)
                     ->get();
         return $cartitem;
-
     }
+
+    public function items(){
+        $items = Item::all();
+        return $items;
+    }
+
 
     public function deleteItem($cartid, $itemid){
         DB::beginTransaction();

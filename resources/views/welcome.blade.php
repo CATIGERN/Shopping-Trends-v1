@@ -42,7 +42,13 @@ Shopping trends
                 <tr>
                 <td>
                 <a href="/carts/{{ $cart->idcart }}"> {{ $cart->cartname }} </a></td>
-                <td></td>
+                <td style="text-align:center">
+                    @if ($cart->total == 0)
+                        None
+                    @else
+                        {{ $cart->bought }}/{{ $cart->total }}
+                    @endif
+                </td>
                 <td><a href="javascript:deleteCart('/carts/{{ $cart->idcart }}/delete')">
                     <img src="/delete.png" height="20" width="20"></a></td>
                 </tr>
@@ -55,12 +61,11 @@ Shopping trends
             </h2></div>
             <div>
             <button type="button" onclick="addCart()">+</button>
-            </div>
-            
+            </div><br>
+            <div style="color:red">@if (session()->has('cartExists'))
+            {{ session('cartExists') }}
+            @endif</div>
         </div>
-        @if (session()->has('cartExists'))
-        {{ session('cartExists') }}
-        @endif
         <div id="myCustomDialog" style="display: none">
 			<div class="dialogWrapper">
 				<form method="POST" action="/carts/add">

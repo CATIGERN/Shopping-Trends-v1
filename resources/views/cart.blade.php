@@ -7,6 +7,9 @@ Cart
 @section('header')
 
 <script src="/js/alert.js-0.0.0/dist/alert.min.js"></script>
+<script src="/js/angular.min.js"></script>
+<script src="/js/app/shoppingtrends.js"></script>
+<script src="/js/controllers/CartController.js"></script>
 <link rel="stylesheet" href="/js/alert.js-0.0.0/dist/alert.core.min.css" />
 <link rel="stylesheet" href="/js/alert.js-0.0.0/dist/alert.default.min.css" />
 <link rel="stylesheet" href="/css/tablestyle.css">
@@ -31,12 +34,27 @@ function deleteItem(url){
 	document.getElementById('deleteitem').submit();
 }
 
+function change(){
+	var selects = document.getElementById('predictions').options;
+	var val = selects[0].value;
+	document.getElementById('autocomplete').value = val;
+}
+
+
+
+
+
 </script>
 
 @stop
 
 @section('content')
-		<h1 align="center" style="color:#595959; font-weight:bold">{{ $cartname }}</h1>
+		<div style="margin:0 35%; width:50%; display:inline-block; text-align:center">
+		<a href="/" style="float:left; margin:0 1.5%; width:50%; position:relative ">
+		<img src="/home.png" width="30" height="30"></a>
+		<h1 style="color:#595959; font-weight:bold; float:left; margin:0 1.5%; width:50%;position:relative">
+		{{ $cartname }}</h1>
+		</div><br><br>
 		<div align="center">
 		<table>
 		<tr>
@@ -74,17 +92,29 @@ function deleteItem(url){
 		@endforeach
 		</table><br>
 		<form method="POST" action="/carts/{{ $cartid }}/add">
+		<div ng-app="shoppingtrends">
         <ul class="input-list style-1 clearfix">
-		      <input type="text" name="itemname" placeholder="Add new item">
+        <div ng-controller="CartController" id="CartController">
+		      <input type="text" name="itemname" placeholder="" style="z-index:5;
+		      background:transparent; position:absolute; margin:0 37%" id="maininput"
+		      onkeyup="change()" ng-model="data">
+		      <input type="text" style="color:#595959; background:transparent; z-index:1; position:absolute; margin:0 37%"
+		       id="autocomplete" disabled="disabled">
+		       <select id="predictions" style="visibility:hidden">
+		       		<option ng-repeat = "item in items | filter:data" value="@{{ item.itemname }}"> 
+		       		@{{ item.itemname }}</option>
+		       </select>
+		       </div>
 		  </ul>
-        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-     	<input type="submit" value="Add Item"></input>
+        <input type="hidden" name="_token" value="{{ csrf_token() }}"><br><br>
+     	<input type="submit" value="Add Item" style="position:relative"></input>
      	<br>
         @if (session()->has('message'))
         	{{ session('message') }}
         @else
        		<p style="text-align:center; color:green">Add a new item</p>
        	@endif
+       	</div>
         </form></div>
         
 
@@ -101,7 +131,7 @@ function deleteItem(url){
 				</form>
 			</div>
 		</div>
-
+		</div>
 		<form method="POST" id="deleteitem">
 			{{ method_field('DELETE') }}
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
