@@ -18,7 +18,7 @@ If you would like to run this application on your own PC. Follow these steps
 * Extract the zip to some location on your PC, eg: C:/Shopping-Trends.
 * Now rename the `.env.example` file in your C:/Shopping-Trends to `.env` (windows users can type : `move .env.example .env`)
 * Open the console and go to your project directory eg: C:/Shopping-Trends
-* Run `composer-install` on your terminal.
+* Run `composer install` on your terminal.
 * Now you should have a local MySQL server, you should then use the dump.sql file to create the corresponding database. Open the .env file and change the database properties according to your database. Also edit the /config/database.php file according to the username and password of your database.
 * Run `php artisan serve` and you should have a local copy of the application running.
 
